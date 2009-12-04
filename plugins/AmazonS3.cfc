@@ -28,7 +28,7 @@ TODO:
 - Setup of logging
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="Amazon S3 REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="false">
+<cfcomponent hint="Amazon S3 REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
@@ -366,6 +366,7 @@ TODO:
 		<cfargument name="bucketName" 	 type="string"  required="true"  hint="The bucket to store in">
 		<cfargument name="uri" 			 type="string"  required="true"  hint="The destination uri key to use when saving the object"/>
 		<cfargument name="data" 		 type="any" 	required="false" default="" hint="The content to save as data, this can be binary,string or anything you like."/>
+		<cfargument name="contentDisposition" type="string" required="false" default="" hint="The content-disposition header to use when downloading file"/>
 		<cfargument name="contentType" 	 type="string"  required="false" default="text/plain" hint="The file/data content type, defaults to text/plain. For plain binary use: binary/octet-stream">
 		<cfargument name="HTTPTimeout" 	 type="numeric" required="false" default="300" hint="The HTTP timeout to use">
 		<cfargument name="cacheControl"  type="string"  required="false" default="no-store, no-cache, must-revalidate" hint="The caching header to send. Defaults to no caching. Example: public,max-age=864000  (10days). For more info look here: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html##sec14.9">
@@ -382,6 +383,11 @@ TODO:
 			// Add Global Put Headers
 			headers["content-type"]  = arguments.contentType;
 			headers["cache-control"] = arguments.cacheControl;
+			
+			// Content Disposition
+			if( len(arguments.contentDisposition) ){
+				headers["content-disposition"] = arguments.contentDisposition;
+			}
 			
 			// Expiration header if set
 			if( isNumeric(arguments.expires) ){
