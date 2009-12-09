@@ -71,7 +71,7 @@ TODO:
 			
 			// SSL?
 			setSSL(getSetting("s3_ssl"));
-								
+						
 			return this;
 		</cfscript>
 	</cffunction>

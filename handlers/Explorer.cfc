@@ -1,7 +1,7 @@
 <cfcomponent extends="coldbox.system.EventHandler" output="false">		<cfproperty name="s3" type="coldbox:myplugin:AmazonS3" />	<cfset this.preHandler_except = "authenticate" />	<cffunction name="preHandler" output="false">		<cfargument name="event" required="true">		<cfscript>			if(NOT len(getSetting("s3_accessKey")) OR NOT len(getSetting("s3_secretKey")) ){				event.overrideEvent('explorer.authenticate');			}		</cfscript>	</cffunction>		<!--- authenticate --->
     <cffunction name="authenticate" access="public" returntype="void" output="false" hint="">
     	<cfargument name="Event" type="any" required="yes">
-    	<cfscript>    		    		var rc = event.getCollection();    		    		if( event.valueExists('authButton') ){				// Save credentials				setSetting("s3_accessKey",rc.accessKey);				setSetting("s3_secretKey",rc.secretKey);				// relocate				setNextEvent('explorer');			}    		
+    	<cfscript>    		    		var rc = event.getCollection();    		    		if( event.valueExists('authButton') ){				// Save credentials				setSetting("s3_accessKey",rc.accessKey);				setSetting("s3_secretKey",rc.secretKey);				s3.setAuth(rc.accessKey,rc.secretKey);				// relocate				setNextEvent('explorer');			}    		
     		event.setView("explorer/authenticate");
     	</cfscript>
     </cffunction>	<!--- Default Action --->	<cffunction name="index" returntype="void" output="false" hint="My main event">		<cfargument name="event" required="true">		<cfscript>			var rc = event.getCollection();						rc.allBuckets = s3.listBuckets();					</cfscript>	</cffunction>		<!--- createBucket --->
