@@ -8,6 +8,9 @@ Thanks to Carlos Gallupa for the EU storage location updates.
 Thanks to Joel Greutman for the fix on the getObject link.
 Thanks to Jerad Sloan for the Cache Control headers.
 
+Version 1.3 
+* Fixed encoding signatures of time expired links for adobe cf.
+
 Version 1.2
 * Fixed the ability to add credentials on the fly.
 

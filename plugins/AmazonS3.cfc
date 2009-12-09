@@ -454,9 +454,14 @@ TODO:
 			var signature = "";
 			var HTTPPrefix = "http://";
 			var securedLink = "";
+			var stringToSign = "GET\n\n\n#epochTime#\n/#arguments.bucketName#/#arguments.uri#";
 			
-			signature = createSignature("GET\n\n\n#epochTime#\n/#arguments.bucketName#/#urlEncodedFormat(arguments.uri)#");
+			// Sign the request
+			signature = createSignature(stringToSign);
 			securedLink = "#urlEncodedFormat(arguments.uri)#?AWSAccessKeyId=#URLEncodedFormat(instance.accessKeyId)#&Expires=#epochTime#&Signature=#URLEncodedFormat(signature)#";
+			
+			// Log it
+			log.debug("String to sign: #stringToSign# . Signature: #signature#");
 					
 			// SSL?
 			if( arguments.useSSL ){ HTTPPrefix = "https://"; }
