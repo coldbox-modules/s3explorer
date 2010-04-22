@@ -50,7 +50,7 @@ TODO:
 			setPluginDescription("A REST wrapper to the Amazon S3 service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");
-			
+
 			// Check settings
 			if( not settingExists("s3_accessKey") ){
 				$throw(message="s3_accesskey setting not defined, please define it.",type="s3.invalidSettings");
@@ -64,18 +64,18 @@ TODO:
 			if( not settingExists("s3_ssl") ){
 				setSetting("s3_ssl",false);
 			}
-			
+
 			// Setup Auth
 			setAuth(getSetting("s3_accessKey"),getSetting("s3_secretKey"));
 			instance.encryptionCharSet = getSetting("s3_encryption_charset");
-			
+
 			// SSL?
 			setSSL(getSetting("s3_ssl"));
-						
+
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- setAuth --->
     <cffunction name="setAuth" output="false" access="public" returntype="void" hint="Set the Amazon credentials">
     	<cfargument name="accessKey" type="string" required="true" default="" hint="The amazon access key"/>
@@ -94,19 +94,19 @@ TODO:
 			else{ instance.URLEndPoint = "http://s3.amazonaws.com"; }
 		</cfscript>
     </cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------>
-	
+
 	<!--- Create Signature --->
 	<cffunction name="createSignature" returntype="string" access="public" output="false" hint="Create request signature according to AWS standards">
 		<cfargument name="stringToSign" type="string" required="true" />
 		<cfscript>
 			var fixedData = replace(arguments.stringToSign,"\n","#chr(10)#","all");
-			
+
 			return toBase64( HMAC_SHA1(instance.secretAccessKey,fixedData) );
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get All Buckets --->
 	<cffunction name="listBuckets" access="public" output="false" returntype="array" hint="List all available buckets.">
 		<cfscript>
@@ -115,15 +115,15 @@ TODO:
 		var results = "";
 		var foundBuckets = [];
 		var thisBucket = "";
-		
+
 		// Invoke call
 		results = S3Request();
-		
-		// error 
+
+		// error
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
-		
+
 		// Parse out buckets
 		bucketsXML = xmlSearch(results.response, "//:Bucket");
 		for(x=1; x lte arrayLen(bucketsXML); x++){
@@ -131,34 +131,34 @@ TODO:
 						  creationDate=trim(bucketsXML[x].creationDate.xmlText)};
 			arrayAppend(foundBuckets, thisBucket);
 		}
-		
-		return foundBuckets;				
-		</cfscript>	
+
+		return foundBuckets;
+		</cfscript>
 	</cffunction>
-	
+
 	<!--- getBucketLocation --->
 	<cffunction name="getBucketLocation" access="public" output="false" returntype="string" hint="Get bucket location.">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to get info on">
 		<cfscript>
 		var results = "";
-		
+
 		// Invoke call
 		results = S3Request(resource=arguments.bucketname & "?location");
-		
-		// error 
+
+		// error
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
-		
+
 		// Parse out EU buckets
 		if( len(results.response.LocationConstraint.XMLText) ){
 			return results.response.LocationConstraint.XMLText;
 		}
-		
+
 		return "US";
-		</cfscript>	
+		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get getAcessControlPolicy --->
 	<cffunction name="getAcessControlPolicy" access="public" output="false" returntype="array" hint="Get's a bucket or object's ACL policy'">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to list">
@@ -170,21 +170,21 @@ TODO:
 			var foundGrants = [];
 			var x = 1;
 			var resource = arguments.bucketName;
-			
+
 			// incoming URI
 			if( len(arguments.uri) ){ resource = resource & "\" & arguments.uri; }
-			
+
 			// Invoke call
 			results = S3Request(resource=resource & "?acl");
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-			
+
 			// Parse Grants
 			grantsXML = xmlSearch(results.response,"//:Grant");
-			
+
 			for(x=1; x lte arrayLen(grantsXML); x++){
 				thisGrant = {
 					type=grantsXML[x].grantee.XMLAttributes["xsi:type"],
@@ -200,11 +200,11 @@ TODO:
 				}
 				arrayAppend(foundGrants,thisGrant);
 			}
-					
+
 			return foundGrants;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get Bucket --->
 	<cffunction name="getBucket" access="public" output="false" returntype="array" hint="Lists information about the objects of a bucket">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to list">
@@ -220,10 +220,10 @@ TODO:
 			var thisContent = "";
 			var headers = [];
 			var parameters = {};
-			
+
 			//HTTP parameters
 			if( len(arguments.prefix) ){
-				parameters["prefix"] = arguments.prefix;				
+				parameters["prefix"] = arguments.prefix;
 			}
 			if( len(arguments.marker) ){
 				parameters["marker"] = arguments.marker;
@@ -234,18 +234,18 @@ TODO:
 			if( len(arguments.delimiter) ){
 				parameters["delimiter"] = arguments.delimiter;
 			}
-			
+
 			// Invoke call
 			results = S3Request(resource=arguments.bucketName,
 								parameters=parameters);
-			// error 
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-			
+
 			// Parse results
 			contentsXML = xmlSearch(results.response, "//:Contents");
-			
+
 			for(x=1; x lte arrayLen(contentsXML); x++){
 				thisContent = {key=trim(contentsXML[x].key.xmlText),
 							  lastModified=trim(contentsXML[x].lastModified.xmlText),
@@ -253,11 +253,11 @@ TODO:
 							  eTag =trim(contentsXML[x].etag.xmlText)};
 				arrayAppend(foundContents, thisContent);
 			}
-			
+
 			return foundContents;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Put Bucket --->
 	<cffunction name="putBucket" access="public" output="false" returntype="boolean" hint="Creates a bucket">
 		<cfargument name="bucketName"		type="string" required="true" hint="The name of the bucket to create">
@@ -268,59 +268,59 @@ TODO:
 		var constraintXML = "";
 		var headers = {};
 		var amzHeaders = {};
-		
+
 		// Man cf8 really did implicit structures NASTY!!
 		amzHeaders["x-amz-acl"] = arguments.acl;
-		
+
 		// storage location?
 		if( arguments.location eq "EU" ){
 			constraintXML = "<CreateBucketConfiguration><LocationConstraint>EU</LocationConstraint></CreateBucketConfiguration>";
 		}
-		
+
 		// Headers
 		headers["content-type"] = "text/xml";
-		
+
 		// Invoke call
 		results = S3Request(method="PUT",
 							resource=arguments.bucketName,
 							body=constraintXML,
 							headers=headers,
 							amzHeaders=amzHeaders);
-		
-		// error 
+
+		// error
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
-								 
+
 		if( results.responseheader.status_code eq "200"){
 			return true;
 		}
-		
+
 		return false;
-		</cfscript>	
+		</cfscript>
 	</cffunction>
-	
-	<!--- Delete a Bucket --->	
+
+	<!--- Delete a Bucket --->
 	<cffunction name="deleteBucket" access="public" output="false" returntype="boolean" hint="Deletes a bucket.">
-		<cfargument name="bucketName" type="string" required="yes">	
+		<cfargument name="bucketName" type="string" required="yes">
 		<cfscript>
 			var results = "";
-			
+
 			// Invoke call
 			results = S3Request(method="DELETE",
 								resource=arguments.bucketName);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-		
+
 			if( results.responseheader.status_code eq "204"){ return true; }
-			
-			return false;		
+
+			return false;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Put an object from a local file --->
 	<cffunction name="putObjectFile" access="public" output="false" returntype="string" hint="Puts an object from a local file into a bucket and returns the etag">
 		<cfargument name="bucketName" 	 type="string"  required="true"  hint="The bucket to store in">
@@ -335,32 +335,35 @@ TODO:
 		<cfscript>
 			// Read the binary file
 			arguments.data = fileReadBinary(arguments.filepath);
-			
+
 			// Default filename
 			if( NOT len(arguments.uri) ){
 				arguments.uri = getFileFromPath(arguments.filePath);
 			}
-			
+
+			//Encode the filepath
+			arguments.uri = urlEncodedFormat(arguments.uri);
+
 			// Send to putObject
 			return putObject(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- createMetaHeaders --->
     <cffunction name="createMetaHeaders" output="false" access="public" returntype="struct" hint="Create a structure of amazon enabled metadata headers">
     	<cfargument name="metaHeaders" 	 type="struct"  required="false" default="#structNew()#" hint="Add additonal metadata headers to the file by passing a struct of name-value pairs"/>
 		<cfscript>
 			var md = {};
 			var key = "";
-			
+
 			for(key in arguments.metaHeaders){
 				md["x-amz-meta-" & key] = arguments.metaHeaders[key];
 			}
-			
+
 			return md;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- Put An Object --->
 	<cffunction name="putObject" access="public" output="false" returntype="string" hint="Puts an object into a bucket and returns the etag">
 		<cfargument name="bucketName" 	 type="string"  required="true"  hint="The bucket to store in">
@@ -376,24 +379,24 @@ TODO:
 		<cfscript>
 			var headers = {};
 			var amzHeaders = createMetaHeaders(arguments.metaHeaders);
-			
+
 			// Add security to amzHeaders
 			amzHeaders["x-amz-acl"] = arguments.acl;
-			
+
 			// Add Global Put Headers
 			headers["content-type"]  = arguments.contentType;
 			headers["cache-control"] = arguments.cacheControl;
-			
+
 			// Content Disposition
 			if( len(arguments.contentDisposition) ){
 				headers["content-disposition"] = arguments.contentDisposition;
 			}
-			
+
 			// Expiration header if set
 			if( isNumeric(arguments.expires) ){
 				headers["expires"] = "#DateFormat(now()+arguments.expires,'ddd, dd mmm yyyy')# #TimeFormat(now(),'H:MM:SS')# GMT";
 			}
-			
+
 			// Invoke call
 			results = S3Request(method="PUT",
 								resource=arguments.bucketName & "/" & arguments.uri,
@@ -401,21 +404,21 @@ TODO:
 								timeout=arguments.HTTPTimeout,
 								headers=headers,
 								amzHeaders=amzHeaders);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-			
+
 			// Get results
 			if( results.responseHeader.status_code eq "200" ){
 				return results.responseHeader.etag;
 			}
-			
+
 			return "";
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get Object Info--->
 	<cffunction name="getObjectInfo" access="public" output="false" returntype="struct" hint="Get an object's metadata information">
 		<cfargument name="bucketName" 	type="string" required="yes" hint="The bucket the object resides in">
@@ -424,20 +427,20 @@ TODO:
 			var results = "";
 			var metadata = {};
 			var key = "";
-			
+
 			// Invoke call
 			results = S3Request(method="HEAD",resource=arguments.bucketName & "/" & arguments.uri);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-			
+
 			// Get metadata
 			for(key in results.responseHeader){
 				metadata[key] = results.responseHeader[key];
 			}
-			
+
 			return metadata;
 		</cfscript>
 	</cffunction>
@@ -455,22 +458,22 @@ TODO:
 			var HTTPPrefix = "http://";
 			var securedLink = "";
 			var stringToSign = "GET\n\n\n#epochTime#\n/#arguments.bucketName#/#arguments.uri#";
-			
+
 			// Sign the request
 			signature = createSignature(stringToSign);
 			securedLink = "#urlEncodedFormat(arguments.uri)#?AWSAccessKeyId=#URLEncodedFormat(instance.accessKeyId)#&Expires=#epochTime#&Signature=#URLEncodedFormat(signature)#";
-			
+
 			// Log it
 			log.debug("String to sign: #stringToSign# . Signature: #signature#");
-					
+
 			// SSL?
 			if( arguments.useSSL ){ HTTPPrefix = "https://"; }
-			
+
 			// VH style Link
 			if( arguments.virtualHostSTyle ){
 				return "#HTTPPrefix##arguments.bucketName#.s3.amazonaws.com/#securedLink#";
 			}
-			
+
 			// Path Style Link
 			return "#HTTPPrefix#s3.amazonaws.com/#arguments.bucketName#/#securedLink#";
 		</cfscript>
@@ -482,18 +485,18 @@ TODO:
 		<cfargument name="uri"   	  type="string" required="true" hint="The file object uri to remove">
 		<cfscript>
 			var results = "";
-			
+
 			// Invoke call
 			results = S3Request(method="DELETE",resource=arguments.bucketName & "/" & arguments.uri);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-		
+
 			if( results.responseheader.status_code eq "204"){ return true; }
-			
-			return false;		
+
+			return false;
 		</cfscript>
 	</cffunction>
 
@@ -509,34 +512,34 @@ TODO:
 			var results = "";
 			var headers = {};
 			var amzHeaders = createMetaHeaders(arguments.metaHeaders);
-			
+
 			// Copy metaHeaders or replace?
 			if( not structIsEmpty(arguments.metaHeaders) ){
 				amzHeaders["x-amz-metadata-directive"] = "REPLACE";
 			}
-			
+
 			// amz copying headers
 			amzHeaders["x-amz-copy-source"] = "/#arguments.fromBucket#/#arguments.fromURI#";
 			amzHeaders["x-amz-acl"] = arguments.acl;
-			
+
 			// Headers
 			headers["Content-Length"] = 0;
-			
+
 			// Invoke call
 			results = S3Request(method="PUT",
 								resource=arguments.toBucket & "/" & arguments.toURI,
 								metaHeaders=metaHeaders,
 								headers=headers,
 								amzHeaders=amzHeaders);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-			
+
 			if( results.responseheader.status_code eq "204"){ return true; }
-			
-			return false;		
+
+			return false;
 		</cfscript>
 	</cffunction>
 
@@ -546,7 +549,7 @@ TODO:
 		<cfargument name="oldFileKey" type="string" required="yes">
 		<cfargument name="newBucketName" type="string" required="yes">
 		<cfargument name="newFileKey" type="string" required="yes">
-		
+
 		<cfif compare(arguments.oldBucketName,arguments.newBucketName) or compare(arguments.oldFileKey,arguments.newFileKey)>
 			<cfset copyObject(arguments.oldBucketName,arguments.oldFileKey,arguments.newBucketName,arguments.newFileKey)>
 			<cfset deleteObject(arguments.oldBucketName,arguments.oldFileKey)>
@@ -577,63 +580,63 @@ TODO:
 			var x=1;
 			var amz = "";
 			var sortedAMZ = listToArray(listSort(structKeyList(arguments.amzHeaders),"textnocase"));
-			
+
 			// Default Content Type
 			if( NOT structKeyExists(arguments.headers,"content-type") ){
 				arguments.headers["content-type"] = "";
 			}
-			
+
 			// Prepare amz headers in sorted order
 			for(x=1; x lte ArrayLen(sortedAMZ); x++){
 				// Create amz signature string
-				arguments.headers[sortedAMZ[x]] = arguments.amzHeaders[sortedAMZ[x]]; 
+				arguments.headers[sortedAMZ[x]] = arguments.amzHeaders[sortedAMZ[x]];
 				amz = amz & "\n" & sortedAMZ[x] & ":" & arguments.amzHeaders[sortedAMZ[x]];
 			}
-			
+
 			// Create Signature
 			signature = "#arguments.method#\n#md5#\n#arguments.headers['content-type']#\n#timestamp##amz#\n/#arguments.resource#";
 			log.debug("Prepared Signature: #signature#");
 			signature = createSignature(signature);
 		</cfscript>
-		
+
 		<!--- REST CAll --->
-		<cfhttp method="#arguments.method#" 
-				url="#instance.URLEndPoint#/#arguments.resource#" 
-				charset="utf-8" 
-				result="HTTPResults" 
+		<cfhttp method="#arguments.method#"
+				url="#instance.URLEndPoint#/#arguments.resource#"
+				charset="utf-8"
+				result="HTTPResults"
 				timeout="#arguments.timeout#">
-			
+
 			<!--- Amazon Global Headers  --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#">
 			<cfhttpparam type="header" name="Authorization" value="AWS #instance.accessKeyId#:#signature#">
-			
+
 			<!--- Headers --->
 			<cfloop collection="#arguments.headers#" item="param">
 				<cfhttpparam type="header" name="#param#" value="#arguments.headers[param]#" >
-			</cfloop>	
-			
+			</cfloop>
+
 			<!--- URL Parameters: encoded automatically by CF --->
 			<cfloop collection="#arguments.parameters#" item="param">
 				<cfhttpparam type="URL" name="#param#" value="#arguments.parameters[param]#" >
-			</cfloop>	
-			
+			</cfloop>
+
 			<!--- Body --->
 			<cfif len(arguments.body) >
 				<cfhttpparam type="body" value="#arguments.body#" >
-			</cfif>	
+			</cfif>
 		</cfhttp>
-		
+
 		<cfscript>
 			// Log
 			log.debug("Amazon Rest Call ->Arguments: #arguments.toString()#, ->Encoded Signature=#signature#",HTTPResults);
-			
+
 			// Set Results
 			results.response = HTTPResults.fileContent;
 			results.responseHeader = HTTPResults.responseHeader;
 			// Error Detail
 			results.message = HTTPResults.errorDetail;
 			if( len(HTTPResults.errorDetail) ){ results.error = true; }
-			
+
 			// Check XML Parsing?
 			if( structKeyExists(HTTPResults.responseHeader, "content-type") AND
 			    HTTPResults.responseHeader["content-type"] eq "application/xml" AND
@@ -646,9 +649,9 @@ TODO:
 					results.message = "Code: #results.response.error.code.XMLText#. Message: #results.response.error.message.XMLText#";
 				}
 			}
-			
+
 			return results;
-		</cfscript>	
+		</cfscript>
 	</cffunction>
 
 	<!--- HMAC Encryption --->
@@ -660,12 +663,12 @@ TODO:
 			var jKey = JavaCast("string",arguments.signKey).getBytes(instance.encryptionCharSet);
 			var key = createObject("java","javax.crypto.spec.SecretKeySpec").init(jKey,"HmacSHA1");
 			var mac = createObject("java","javax.crypto.Mac").getInstance(key.getAlgorithm());
-			
+
 			mac.init(key);
 			mac.update(jMsg);
-			
+
 			return mac.doFinal();
 	   	</cfscript>
-	</cffunction>	
-	
+	</cffunction>
+
 </cfcomponent>
