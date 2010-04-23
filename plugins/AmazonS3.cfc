@@ -461,7 +461,7 @@ TODO:
 
 			// Sign the request
 			signature = createSignature(stringToSign);
-			securedLink = "#urlEncodedFormat(arguments.uri)#?AWSAccessKeyId=#URLEncodedFormat(instance.accessKeyId)#&Expires=#epochTime#&Signature=#URLEncodedFormat(signature)#";
+			securedLink = "#urlEncodedFormat(arguments.uri)#?AWSAccessKeyId=#URLEncodedFormat(instance.accessKeyId)#&Expires=#epochTime#&Signature=#replace(URLEncodedFormat(signature),"%3D","%","all")#";
 
 			// Log it
 			log.debug("String to sign: #stringToSign# . Signature: #signature#");
