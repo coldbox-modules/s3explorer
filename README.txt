@@ -10,6 +10,10 @@ Thanks to Carlos Gallupa for the EU storage location updates.
 Thanks to Joel Greutman for the fix on the getObject link.
 Thanks to Jerad Sloan for the Cache Control headers.
 
+Version 1.4
+* Updates to ColdBox 3.0 compat and cleanup
+* auth URL fixes
+
 Version 1.3 
 * Fixed encoding signatures of time expired links for adobe cf.
 

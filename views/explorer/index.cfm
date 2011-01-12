@@ -1,31 +1,9 @@
 <cfoutput>
-<cfsavecontent variable="js">
-<script type="text/javascript">
-$(document).ready(function() {
-	$("##bucketsTable").tablesorter();
-});
-
-var closeHTML = "<p><button class='simplemodal-close' onClick='$.modal.close()'>Close-Cancel</button> <span>(or press ESC to cancel)</span></p>";
-	
-function createBucket(){
-	$("##createDialog").modal({minWidth:500,overlayClose:true});
-}
-function showACL(bucket){
-	var data = {objectName:bucket};
-	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
-						data,
-						function(){
-							$(this).append(closeHTML);
-						}).modal({minWidth:600,overlayClose:true});
-}
-</script>
-</cfsavecontent>
-<cfhtmlhead text="#js#">
-
 <h1><img src="includes/images/disks.png" alt="disks" /> My Amazon S3 Buckets</h1>
 
 #getPlugin("Messagebox").renderit()#
 
+<!--- Button Bar --->
 <div id="button-bar">
 	<ul>
 		<li>
@@ -82,6 +60,7 @@ function showACL(bucket){
 </form>
 </div>
 
+<!--- Buckets Table --->
 <table id="bucketsTable" class="tablesorter">
 <thead>
 <tr>
@@ -124,4 +103,24 @@ function showACL(bucket){
 </cfloop>
 </tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("##bucketsTable").tablesorter();
+});
+
+var closeHTML = "<p><button class='simplemodal-close' onClick='$.modal.close()'>Close-Cancel</button> <span>(or press ESC to cancel)</span></p>";
+	
+function createBucket(){
+	$("##createDialog").modal({minWidth:500,overlayClose:true});
+}
+function showACL(bucket){
+	var data = {objectName:bucket};
+	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
+						data,
+						function(){
+							$(this).append(closeHTML);
+						}).modal({minWidth:600,overlayClose:true});
+}
+</script>
 </cfoutput>

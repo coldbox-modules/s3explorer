@@ -1,54 +1,4 @@
 <cfoutput>
-<cfsavecontent variable="js">
-<script type="text/javascript">
-$(document).ready(function() {
-	$("##bucketsTable").tablesorter();
-});
-
-var closeHTML = "<p><button class='simplemodal-close' onClick='$.modal.close()'>Close-Cancel</button> <span>(or press ESC to cancel)</span></p>";
-	
-function uploadObject(){
-	$("##uploadDialog").modal({minWidth:500,overlayClose:true});
-}
-function getObjectInfo(obj){
-	var data = {bucketName:"#rc.bucketName#",
-				objectKey:obj};
-	$("##dialog").load('#event.buildLink("explorer.getObjectInfo")#',
-						data,
-						function(){
-							$(this).append(closeHTML);
-						}).modal({minWidth:650,minHeight:400,overlayClose:true});
-}
-function secureLink(obj){
-	var data = {bucketName:"#rc.bucketName#",
-				key:obj};
-	$("##dialog").load('#event.buildLink("explorer.genAuthenticatedURL")#',
-						data,
-						function(){
-							$(this).append(closeHTML);
-						}).modal({minWidth:500,overlayClose:true});
-}
-function copyObject(obj){
-	var data = {fromBucket:"#rc.bucketName#",
-				fromURI:obj};
-	$("##dialog").load('#event.buildLink("explorer.copyDialog")#',
-						data,
-						function(){
-							$(this).append(closeHTML);
-						}).modal({minWidth:600,minHeight:450,overlayClose:true});
-}
-function showACL(bucket){
-	var data = {objectName:bucket};
-	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
-						data,
-						function(){
-							$(this).append(closeHTML);
-						}).modal({minWidth:600,overlayClose:true});
-}
-</script>
-</cfsavecontent>
-<cfhtmlhead text="#js#">
-
 <h1><img src="includes/images/disks.png" alt="disks" /> My Amazon S3 Buckets > #rc.bucketName#</h1>
 
 #getPlugin("Messagebox").renderit()#
@@ -187,4 +137,51 @@ function showACL(bucket){
 </cfloop>
 </tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("##bucketsTable").tablesorter();
+});
+
+var closeHTML = "<p><button class='simplemodal-close' onClick='$.modal.close()'>Close-Cancel</button> <span>(or press ESC to cancel)</span></p>";
+	
+function uploadObject(){
+	$("##uploadDialog").modal({minWidth:500,overlayClose:true});
+}
+function getObjectInfo(obj){
+	var data = {bucketName:"#rc.bucketName#",
+				objectKey:obj};
+	$("##dialog").load('#event.buildLink("explorer.getObjectInfo")#',
+						data,
+						function(){
+							$(this).append(closeHTML);
+						}).modal({minWidth:650,minHeight:400,overlayClose:true});
+}
+function secureLink(obj){
+	var data = {bucketName:"#rc.bucketName#",
+				key:obj};
+	$("##dialog").load('#event.buildLink("explorer.genAuthenticatedURL")#',
+						data,
+						function(){
+							$(this).append(closeHTML);
+						}).modal({minWidth:500,overlayClose:true});
+}
+function copyObject(obj){
+	var data = {fromBucket:"#rc.bucketName#",
+				fromURI:obj};
+	$("##dialog").load('#event.buildLink("explorer.copyDialog")#',
+						data,
+						function(){
+							$(this).append(closeHTML);
+						}).modal({minWidth:600,minHeight:450,overlayClose:true});
+}
+function showACL(bucket){
+	var data = {objectName:bucket};
+	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
+						data,
+						function(){
+							$(this).append(closeHTML);
+						}).modal({minWidth:600,overlayClose:true});
+}
+</script>
 </cfoutput>

@@ -24,8 +24,6 @@ s3_secretKey : The Amazon secret key
 s3_encryption_charset : encryptyion charset (Optional, defaults to utf-8)
 s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 
-TODO:
-- Setup of logging
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="Amazon S3 REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="true">
@@ -46,7 +44,7 @@ TODO:
 			// Setup Plugin
 			super.init(arguments.controller);
 			setPluginName("Amazon S3 REST Wrapper");
-			setPluginVersion("2.0");
+			setPluginVersion("1.4");
 			setPluginDescription("A REST wrapper to the Amazon S3 service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");
@@ -98,8 +96,8 @@ TODO:
 <!------------------------------------------- PUBLIC ------------------------------------------>
 
 	<!--- Create Signature --->
-	<cffunction name="createSignature" returntype="string" access="public" output="false" hint="Create request signature according to AWS standards">
-		<cfargument name="stringToSign" type="string" required="true" />
+	<cffunction name="createSignature" returntype="any" access="public" output="false" hint="Create request signature according to AWS standards">
+		<cfargument name="stringToSign" type="any" required="true" />
 		<cfscript>
 			var fixedData = replace(arguments.stringToSign,"\n","#chr(10)#","all");
 
@@ -460,8 +458,9 @@ TODO:
 			var stringToSign = "GET\n\n\n#epochTime#\n/#arguments.bucketName#/#arguments.uri#";
 
 			// Sign the request
-			signature = createSignature(stringToSign);
-			securedLink = "#urlEncodedFormat(arguments.uri)#?AWSAccessKeyId=#URLEncodedFormat(instance.accessKeyId)#&Expires=#epochTime#&Signature=#replace(URLEncodedFormat(signature),"%3D","%","all")#";
+			signature = urlEncodedFormat(createSignature(stringToSign));
+			//securedLink = "#arguments.uri#?AWSAccessKeyId=#instance.accessKeyId#&Expires=#epochTime#&Signature=#replace(signature,"%3D","%","all")#";
+			securedLink = "#arguments.uri#?AWSAccessKeyId=#instance.accessKeyId#&Expires=#epochTime#&Signature=#signature#";
 
 			// Log it
 			log.debug("String to sign: #stringToSign# . Signature: #signature#");
