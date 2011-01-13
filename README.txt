@@ -13,6 +13,7 @@ Thanks to Jerad Sloan for the Cache Control headers.
 Version 1.4
 * Updates to ColdBox 3.0 compat and cleanup
 * auth URL fixes
+* folder support for buckets thanks to Alagukannan Alagappan!
 
 Version 1.3 
 * Fixed encoding signatures of time expired links for adobe cf.

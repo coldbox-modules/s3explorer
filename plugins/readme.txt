@@ -10,6 +10,7 @@ Thanks to Jerad Sloan for the Cache Control headers.
 
 Version 1.4
 * Cleanup and fixes for gen auth URLs
+* folder support for buckets thanks to Alagukannan Alagappan
 
 Version 1.3 
 * Fixed encoding signatures of time expired links for adobe cf.

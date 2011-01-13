@@ -257,7 +257,7 @@ table a:hover {
 	overflow: auto;
 }
 
-#createDialog, #uploadDialog{
+#createDialog, #uploadDialog, #deleteDialog, #uploadFolderDialog{
 	display: none;
 }
 #dialog{

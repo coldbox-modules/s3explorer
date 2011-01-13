@@ -16,6 +16,6 @@
 	}
 	
 	// Your Application Routes
-	addRoute(pattern="/bucket/:bucketname",handler="explorer",action="viewBucket");
+	addRoute(pattern="/bucket/:bucketname/:foldername?",handler="explorer",action="viewBucket");
 	addRoute(pattern=":handler/:action?");
 </cfscript>

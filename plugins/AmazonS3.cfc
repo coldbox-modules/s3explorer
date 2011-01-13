@@ -156,7 +156,69 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		return "US";
 		</cfscript>
 	</cffunction>
+	
+	<!--- getBucketVersionStatus --->
+	<cffunction name="getBucketVersionStatus" access="public" output="false" returntype="String" hint="Get bucket location.">
+		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to get info on">
+		<cfscript>
+		var results = "";
+		var Status = [];
+		
+		// Invoke call
+		results = S3Request(resource=arguments.bucketname & "?versioning");
+		
+		// error 
+		if( results.error ){
+			$throw("Error making Amazon REST Call",results.message);
+		}
+		Status = xmlSearch(results.response,"//:VersioningConfiguration//:Status[1]");
+		
+		// Parse out Version Configuration
+		if( arrayLen(Status) gt 0 ){
+			return Status[1].xmlText;
+		}
+		
+		return "";
+		</cfscript>	
+	</cffunction>
+	
+	<!---setBucketVersion--->
+	<cffunction name="setBucketVersionStatus" access="public" output="false" returntype="boolean" hint="set bucket versioning">	
+		<cfargument name="bucketName"		type="string"   required="true" hint="The name of the bucket to create">
+		<cfargument name="version"		    type="boolean"  required="false"  default="true"   hint="the version status enabled/disabled.">
+		<cfscript>
+			var results = "";
+			var constraintXML = "";
+			var headers = {};
+			var amzHeaders = {};
+			// Headers
+			headers["content-type"] = "text/plain";	
+			
+			if (arguments.version eq true){
+				headers["?versioning"] = "";
+				constraintXML = '<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>Enabled</Status></VersioningConfiguration>';
+			}	
 
+			// Invoke call
+			results = S3Request(method="PUT",
+								resource=arguments.bucketName,
+								body=constraintXML,
+								headers=headers,
+								amzHeaders=amzHeaders);
+			
+			// error 
+			if( results.error ){
+				$throw("Error making Amazon REST Call",results.message);
+			}
+									 
+			if( results.responseheader.status_code eq "200"){
+				return true;
+			}
+			
+			return false;			
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get getAcessControlPolicy --->
 	<cffunction name="getAcessControlPolicy" access="public" output="false" returntype="array" hint="Get's a bucket or object's ACL policy'">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to list">
@@ -342,6 +404,25 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			//Encode the filepath
 			arguments.uri = urlEncodedFormat(arguments.uri);
 
+			// Send to putObject
+			return putObject(argumentCollection=arguments);
+		</cfscript>
+	</cffunction>
+	
+	<!--- Put a folder --->
+	<cffunction name="putObjectFolder" access="public" output="false" returntype="string" hint="Puts an object from a local file into a bucket and returns the etag">
+		<cfargument name="bucketName" 	 type="string"  required="true"  hint="The bucket to store in">
+		<cfargument name="uri" 			 type="string"  required="true" default=""  hint="The destination uri key to use when saving the object, if not used, the name of the file will be used."/>
+		<cfargument name="contentType" 	 type="string"  required="false" default="binary/octet-stream" hint="The file content type, defaults to: binary/octet-stream">
+		<cfargument name="HTTPTimeout" 	 type="numeric" required="false" default="300" hint="The HTTP timeout to use">
+		<cfargument name="cacheControl"  type="string"  required="false" default="no-store, no-cache, must-revalidate" hint="The caching header to send. Defaults to no caching. Example: public,max-age=864000  (10days). For more info look here: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html##sec14.9">
+		<cfargument name="expires" 		 type="string"  required="false" default="" hint="Sets the expiration header of the object in days."/>
+		<cfargument name="acl" 			 type="string"  required="false" default="#this.ACL_PUBLIC_READ#" hint="The default Amazon security access policy">
+		<cfargument name="metaHeaders" 	 type="struct"  required="false" default="#structNew()#" hint="Add additonal metadata headers to the file by passing a struct of name-value pairs"/>
+		<cfscript>
+			// Read the binary file
+			arguments.data = "";
+						
 			// Send to putObject
 			return putObject(argumentCollection=arguments);
 		</cfscript>
