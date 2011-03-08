@@ -156,34 +156,34 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		return "US";
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getBucketVersionStatus --->
 	<cffunction name="getBucketVersionStatus" access="public" output="false" returntype="String" hint="Get bucket location.">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to get info on">
 		<cfscript>
 		var results = "";
 		var Status = [];
-		
+
 		// Invoke call
 		results = S3Request(resource=arguments.bucketname & "?versioning");
-		
-		// error 
+
+		// error
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
 		Status = xmlSearch(results.response,"//:VersioningConfiguration//:Status[1]");
-		
+
 		// Parse out Version Configuration
 		if( arrayLen(Status) gt 0 ){
 			return Status[1].xmlText;
 		}
-		
+
 		return "";
-		</cfscript>	
+		</cfscript>
 	</cffunction>
-	
+
 	<!---setBucketVersion--->
-	<cffunction name="setBucketVersionStatus" access="public" output="false" returntype="boolean" hint="set bucket versioning">	
+	<cffunction name="setBucketVersionStatus" access="public" output="false" returntype="boolean" hint="set bucket versioning">
 		<cfargument name="bucketName"		type="string"   required="true" hint="The name of the bucket to create">
 		<cfargument name="version"		    type="boolean"  required="false"  default="true"   hint="the version status enabled/disabled.">
 		<cfscript>
@@ -192,12 +192,12 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			var headers = {};
 			var amzHeaders = {};
 			// Headers
-			headers["content-type"] = "text/plain";	
-			
+			headers["content-type"] = "text/plain";
+
 			if (arguments.version eq true){
 				headers["?versioning"] = "";
 				constraintXML = '<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>Enabled</Status></VersioningConfiguration>';
-			}	
+			}
 
 			// Invoke call
 			results = S3Request(method="PUT",
@@ -205,20 +205,20 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 								body=constraintXML,
 								headers=headers,
 								amzHeaders=amzHeaders);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making Amazon REST Call",results.message);
 			}
-									 
+
 			if( results.responseheader.status_code eq "200"){
 				return true;
 			}
-			
-			return false;			
+
+			return false;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get getAcessControlPolicy --->
 	<cffunction name="getAcessControlPolicy" access="public" output="false" returntype="array" hint="Get's a bucket or object's ACL policy'">
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to list">
@@ -408,7 +408,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			return putObject(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Put a folder --->
 	<cffunction name="putObjectFolder" access="public" output="false" returntype="string" hint="Puts an object from a local file into a bucket and returns the etag">
 		<cfargument name="bucketName" 	 type="string"  required="true"  hint="The bucket to store in">
@@ -422,7 +422,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		<cfscript>
 			// Read the binary file
 			arguments.data = "";
-						
+
 			// Send to putObject
 			return putObject(argumentCollection=arguments);
 		</cfscript>
@@ -536,10 +536,20 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			var signature = "";
 			var HTTPPrefix = "http://";
 			var securedLink = "";
-			var stringToSign = "GET\n\n\n#epochTime#\n/#arguments.bucketName#/#arguments.uri#";
+			var stringToSign= "";
+
+			arguments.uri = urlEncodedFormat(arguments.uri);
+			arguments.uri = replacenocase(arguments.uri,"%2E",".","all");
+			arguments.uri = replacenocase(arguments.uri,"%2D","-","all");
+			arguments.uri = replacenocase(arguments.uri,"%5F","_","all");
+
+			stringToSign = "GET\n\n\n#epochTime#\n/#arguments.bucketName#/#arguments.uri#";
 
 			// Sign the request
-			signature = urlEncodedFormat(createSignature(stringToSign));
+			signature = createSignature(stringToSign);
+			signature = urlEncodedFormat(signature);
+			//signature = replace(signature,"%3D","%","all");
+
 			//securedLink = "#arguments.uri#?AWSAccessKeyId=#instance.accessKeyId#&Expires=#epochTime#&Signature=#replace(signature,"%3D","%","all")#";
 			securedLink = "#arguments.uri#?AWSAccessKeyId=#instance.accessKeyId#&Expires=#epochTime#&Signature=#signature#";
 
@@ -565,6 +575,11 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		<cfargument name="uri"   	  type="string" required="true" hint="The file object uri to remove">
 		<cfscript>
 			var results = "";
+
+			arguments.uri = urlEncodedFormat(arguments.uri);
+			arguments.uri = replacenocase(arguments.uri,"%2E",".","all");
+			arguments.uri = replacenocase(arguments.uri,"%2D","-","all");
+			arguments.uri = replacenocase(arguments.uri,"%5F","_","all");
 
 			// Invoke call
 			results = S3Request(method="DELETE",resource=arguments.bucketName & "/" & arguments.uri);
