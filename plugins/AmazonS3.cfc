@@ -44,7 +44,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			// Setup Plugin
 			super.init(arguments.controller);
 			setPluginName("Amazon S3 REST Wrapper");
-			setPluginVersion("1.4");
+			setPluginVersion("1.5");
 			setPluginDescription("A REST wrapper to the Amazon S3 service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");

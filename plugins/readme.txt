@@ -8,6 +8,9 @@ Thanks to Carlos Gallupa for the EU storage location updates.
 Thanks to Joel Greutman for the fix on the getObject link.
 Thanks to Jerad Sloan for the Cache Control headers.
 
+Version 1.5
+* Fixes by Curt Gratz and CKH on filename characters
+
 Version 1.4
 * Cleanup and fixes for gen auth URLs
 * folder support for buckets thanks to Alagukannan Alagappan
