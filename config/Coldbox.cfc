@@ -1,23 +1,22 @@
 <cfcomponent output="false" hint="My App Configuration">
-<cfscript>
+<cfscript>	
 	// Configure ColdBox Application
 	function configure(){
 	
 		// coldbox directives
 		coldbox = {
 			//Application Setup
-			appName 				= "S3 Explorer",
-			eventName 				= "event",
+			appName 				= "S3 Explorer Shell",
 			
 			//Development Settings
-			debugMode				= false,
+			debugMode				= true,
 			debugPassword			= "",
 			reinitPassword			= "",
-			handlersIndexAutoReload = false,
+			handlersIndexAutoReload = true,
 			configAutoReload		= false,
 			
 			//Implicit Events
-			defaultEvent			= "Explorer.index",
+			defaultEvent			= "s3explorer:explorer",
 			requestStartHandler		= "",
 			requestEndHandler		= "",
 			applicationStartHandler = "",
@@ -42,7 +41,7 @@
 			customErrorTemplate		= "",
 				
 			//Application Aspects
-			handlerCaching 			= true,
+			handlerCaching 			= false,
 			eventCaching			= false,
 			proxyReturnCollection 	= false,
 			flashURLPersistScope	= "session"	
@@ -50,17 +49,15 @@
 	
 		// custom settings
 		settings = {
-			s3_accessKey = "",
-			s3_secretKey = "",
-			s3_ssl		 = false,
-			s3_tempUploadDirectory = expandPath("/#appMapping#/config/tmpUpload")
 		};
 		
-		// environment settings, create a detectEnvironment() method to detect it yourself.
-		// create a function with the name of the environment so it can be executed if that environment is detected
-		// the value of the environment is a list of regex patterns to match the cgi.http_host.
-		environments = {
-			development = "^cf9.,^railo."
+		// Activate WireBox
+		wirebox = { enabled = true, singletonReload=true };
+		
+		// Module Directives
+		modules = {
+			//Turn to false in production, on for dev
+			autoReload = false
 		};
 		
 		//LogBox DSL
@@ -70,7 +67,7 @@
 				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" }
 			},
 			// Root Logger
-			root = { levelmax="INFO", appenders="*" },
+			root = { levelmax="DEBUG", appenders="*" },
 			// Implicit Level Categories
 			info = [ "coldbox.system" ] 
 		};
@@ -79,7 +76,7 @@
 		layoutSettings = {
 			defaultLayout = "Layout.Main.cfm"
 		};
-				
+		
 		//Register interceptors as an array, we need order
 		interceptors = [
 			//Autowire
@@ -93,11 +90,5 @@
 		];
 		
 	}
-	
-	function development(){
-		coldbox.debugMode = true;
-		coldbox.handlersIndexAutoReload = true;
-		coldbox.handlerCaching = false;
-	}	
 </cfscript>
 </cfcomponent>

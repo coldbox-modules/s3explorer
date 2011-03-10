@@ -1,5 +1,5 @@
 <cfoutput>
-<h1><img src="includes/images/disks.png" alt="disks" /> My Amazon S3 Buckets</h1>
+<h1><img src="#rc.root#/includes/images/disks.png" alt="disks" /> My Amazon S3 Buckets</h1>
 
 #getPlugin("Messagebox").renderit()#
 
@@ -8,28 +8,28 @@
 	<ul>
 		<li>
 			<a href="javascript:createBucket()" class="hotbutton">
-				<span><img src="includes/images/add.png" alt="add" border="0" /> Create Bucket</span>
+				<span><img src="#rc.root#/includes/images/add.png" alt="add" border="0" /> Create Bucket</span>
 			</a>
 		</li>
 		<li>
-			<a href="#event.buildLink(linkTo='explorer')#" class="hotbutton">
-				<span><img src="includes/images/reload.png" alt="reload" border="0" /> Reload</span>
+			<a href="#event.buildLink(linkTo='s3explorer')#" class="hotbutton">
+				<span><img src="#rc.root#/includes/images/reload.png" alt="reload" border="0" /> Reload</span>
 			</a>
 		</li>
 		<li>
-			<a href="#event.buildLink(linkTo='explorer.docs')#" class="hotbutton">
-				<span><img src="includes/images/help.png" alt="reload" border="0" /> API Help</span>
+			<a href="#event.buildLink(linkTo='s3explorer.explorer.docs')#" class="hotbutton">
+				<span><img src="#rc.root#/includes/images/help.png" alt="reload" border="0" /> API Help</span>
 			</a>
 		</li>
 	</ul>
 </div>
 
 <!--- Generic Dialog --->
-<div id="dialog"><img src="includes/images/ajax-loader.gif" alt="loader" id="ajaxLoader" /></div>
+<div id="dialog"><img src="#rc.root#/includes/images/ajax-loader.gif" alt="loader" id="ajaxLoader" /></div>
 
 <!--- Create Dialog --->
 <div id="createDialog">
-<form action="#event.buildLink('explorer.createbucket')#" method="post">
+<form action="#event.buildLink('s3explorer.explorer.createbucket')#" method="post">
 	<fieldset>
 		<legend>Create Bucket</legend>
 		
@@ -73,9 +73,9 @@
 <cfloop array="#rc.allBuckets#" index="bucket">
 <tr>
 	<td>
-		<a href="#event.buildLink(linkTo='bucket',queryString="#URLEncodedFormat(bucket.Name)#")#"
+		<a href="#event.buildLink(linkTo='s3explorer.bucket',queryString="#URLEncodedFormat(bucket.Name)#")#"
 		   title="Go into bucket">
-		   <img src="includes/images/folder.gif" alt="folder" border="0" />#bucket.Name#
+		   <img src="#rc.root#/includes/images/folder.gif" alt="folder" border="0" />#bucket.Name#
 		</a>
 	</td>
 	<td>
@@ -83,20 +83,20 @@
 		#timeFormat(getPlugin("DateUtils").parseISO8601(bucket.CreationDate),"hh:mm tt")#
 	</td>
 	<td class="center">
-		<a href="#event.buildLink('explorer.viewBucket.bucketName.' & URLEncodedFormat(bucket.Name))#"
+		<a href="#event.buildLink('s3explorer.explorer.viewBucket.bucketName.' & URLEncodedFormat(bucket.Name))#"
 		   title="Go into bucket">
-			<img src="includes/images/view.png" border="0" alt="view" />
+			<img src="#rc.root#/includes/images/view.png" border="0" alt="view" />
 		</a>
 		
 		<a href="javascript:showACL('#bucket.name#')"
 		   title="Show bucket ACL">
-			<img src="includes/images/security.png" border="0" alt="security" />
+			<img src="#rc.root#/includes/images/security.png" border="0" alt="security" />
 		</a>
 		
-		<a href="#event.buildLink('explorer.removeBucket.bucketName.' & URLEncodedFormat(bucket.Name))#" 
+		<a href="#event.buildLink('s3explorer.explorer.removeBucket.bucketName.' & URLEncodedFormat(bucket.Name))#" 
 		   onClick="return confirm('Really Delete?')"
 		   title="Remove object">
-			<img src="includes/images/delete.png" border="0" alt="delete" />
+			<img src="#rc.root#/includes/images/delete.png" border="0" alt="delete" />
 		</a>
 	</td>
 </tr>
@@ -116,7 +116,7 @@ function createBucket(){
 }
 function showACL(bucket){
 	var data = {objectName:bucket};
-	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
+	$("##dialog").load('#event.buildLink("s3explorer.explorer.objectACL")#',
 						data,
 						function(){
 							$(this).append(closeHTML);

@@ -1,5 +1,5 @@
 <cfoutput>
-<h1><img src="includes/images/security.png" alt="security" /> Timed Expired Secure Link</h1>
+<h1><img src="#rc.root#/includes/images/security.png" alt="security" /> Timed Expired Secure Link</h1>
 <p>Click to select URL</i>.
 
 <form>

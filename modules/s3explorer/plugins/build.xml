@@ -12,9 +12,11 @@
 	</target>
 			
 	<target name="do.archive" depends="cleanALL">
+		<copy file="../../../README.txt" todir="." />
 		<zip destfile="${build.label}.zip">
 			<fileset dir="." excludes="build.xml" />			
 		</zip>
+		<delete file="README.txt" />
 	</target>
 
 </project>

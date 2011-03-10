@@ -1,13 +1,13 @@
 <cfoutput>
-<h1><img src="includes/images/disks.png" alt="disks" /> 
-	<a href="#event.buildLink(linkTo='explorer')#" title="My Amazon S3 Buckets">My Amazon S3 Buckets</a>
-	> <a href="#event.buildLink(linkTo='bucket',queryString="#urlEncodedFormat(rc.bucketname)#")#" title="#rc.bucketName# Bucket">#rc.bucketName#</a>
+<h1><img src="#rc.root#/includes/images/disks.png" alt="disks" /> 
+	<a href="#event.buildLink(linkTo='s3explorer')#" title="My Amazon S3 Buckets">My Amazon S3 Buckets</a>
+	> <a href="#event.buildLink(linkTo='s3explorer/bucket',queryString="#urlEncodedFormat(rc.bucketname)#")#" title="#rc.bucketName# Bucket">#rc.bucketName#</a>
 		<cfif listlen(rc.foldername) gt 0>
 			<cfset folderPath = "">
 			<cfloop list="#rc.foldername#" delimiters="/" index="i">
 				<cfset folderPath = listAppend(folderPath,i,"|")>
 				> 
-				<a href="#event.buildLink(linkTo="bucket",queryString="#urlEncodedFormat(rc.bucketname)#")#/#urlencodedFormat(folderPath)#" title="#i# Folder">#i#</a>
+				<a href="#event.buildLink(linkTo="s3explorer.bucket",queryString="#urlEncodedFormat(rc.bucketname)#")#/#urlencodedFormat(folderPath)#" title="#i# Folder">#i#</a>
 			</cfloop>
 		</cfif>	
 </h1>
@@ -16,7 +16,7 @@
 
 <div id="bucketChooser">
 	<label for="changeBucket"> Jump To: &nbsp;
-	<select name="changeBucket" id="changeBucket" onChange="window.location.href='#event.buildLink(linkTo='bucket')#/'+this.value">
+	<select name="changeBucket" id="changeBucket" onChange="window.location.href='#event.buildLink(linkTo='s3explorer.bucket')#/'+this.value">
 		<cfloop array="#rc.allBuckets#" index="bucket">
 			<option value="#urlEncodedFormat(bucket.name)#"
 				    <cfif comparenocase(bucket.name,rc.bucketname) eq 0>selected="selected"</cfif>>#bucket.name#</option>
@@ -28,40 +28,40 @@
 <div id="button-bar">
 	<ul>
 		<li>
-			<a href="#event.buildLink('explorer')#" class="hotbutton">
-				<span><img src="includes/images/arrow-return.png" alt="return" border="0" /> Go Back</span>
+			<a href="#event.buildLink('s3explorer')#" class="hotbutton">
+				<span><img src="#rc.root#/includes/images/arrow-return.png" alt="return" border="0" /> Go Back</span>
 			</a>
 		</li>
 		<li>
 			<a href="javascript:window.location.reload()" class="hotbutton">
-				<span><img src="includes/images/reload.png" alt="reload" border="0" /> Reload</span>
+				<span><img src="#rc.root#/includes/images/reload.png" alt="reload" border="0" /> Reload</span>
 			</a>
 		</li>
 		<li>
 			<a href="javascript:uploadObject()" class="hotbutton">
-				<span><img src="includes/images/upload.png" alt="upload" border="0" /> Upload File</span>
+				<span><img src="#rc.root#/includes/images/upload.png" alt="upload" border="0" /> Upload File</span>
 			</a>
 		</li>
 		<li>
 			<a href="javascript:uploadFolder()" class="hotbutton">
-				<span><img src="includes/images/add.png" alt="upload" border="0" /> Create Folder</span>
+				<span><img src="#rc.root#/includes/images/add.png" alt="upload" border="0" /> Create Folder</span>
 			</a>
 		</li>
 		<li>
-			<a href="#event.buildLink(linkTo='explorer.docs')#" class="hotbutton">
-				<span><img src="includes/images/help.png" alt="reload" border="0" /> API Help</span>
+			<a href="#event.buildLink(linkTo='s3explorer.explorer.docs')#" class="hotbutton">
+				<span><img src="#rc.root#/includes/images/help.png" alt="reload" border="0" /> API Help</span>
 			</a>
 		</li>
 	</ul>
 </div>
 
 <!--- Generic Dialog --->
-<div id="dialog"><img src="includes/images/ajax-loader.gif" alt="loader" id="ajaxLoader" /></div>
+<div id="dialog"><img src="#rc.root#/includes/images/ajax-loader.gif" alt="loader" id="ajaxLoader" /></div>
 
 <!--- Delete Dialog --->
 <div id="deleteDialog">
 	<h3>This object will be permanently deleted and cannot be recovered. Are you sure?</h3>
-	<form action="#event.buildLink('explorer.removeObject')#" method="post">
+	<form action="#event.buildLink('s3explorer.explorer.removeObject')#" method="post">
 		<input type="hidden" name="bucketName" id="bucketName" value="#rc.bucketName#" />
 		<input type="hidden" name="uri" id="uri" value="" />		
 		  <p align="center">
@@ -73,7 +73,7 @@
 
 <!--- Upload Dialog --->
 <div id="uploadDialog">
-<form action="#event.buildLink('explorer.upload')#" method="post" enctype="multipart/form-data">
+<form action="#event.buildLink('s3explorer.explorer.upload')#" method="post" enctype="multipart/form-data">
 <input type="hidden" name="bucketName" id="bucketName" value="#rc.bucketName#" />
 <input type="hidden" name="folderName" id="folderName" value="#rc.folderName#" />
 <fieldset>
@@ -112,7 +112,7 @@
 
 <!--- Upload Folder Dialog --->
 <div id="uploadFolderDialog">
-<form action="#event.buildLink('explorer.createFolder')#" method="post" enctype="multipart/form-data">
+<form action="#event.buildLink('s3explorer.explorer.createFolder')#" method="post" enctype="multipart/form-data">
 <input type="hidden" name="bucketName" id="bucketName" value="#rc.bucketName#" />
 
 <fieldset>
@@ -151,12 +151,12 @@
 <tr>
 	<td>
 		<cfif findNoCase("_$folder$",object.key)>
-			<a href="#event.buildLink(linkTo="explorer.viewBucket",queryString="bucketName=#urlEncodedFormat(rc.bucketname)#")#/folderName/#encodedObjectKey#" title="Public Link">
-				<img src="includes/images/folder.gif" alt="folder" border="0" /> #replacenocase(object.Key,'_$folder$','')#
+			<a href="#event.buildLink(linkTo="s3explorer.explorer.viewBucket",queryString="bucketName=#urlEncodedFormat(rc.bucketname)#")#/folderName/#encodedObjectKey#" title="Public Link">
+				<img src="#rc.root#/includes/images/folder.gif" alt="folder" border="0" /> #replacenocase(object.Key,'_$folder$','')#
 			</a>
 		<cfelse>
 			<a target="_blank" href="http://#rc.bucketName#.s3.amazonaws.com/#object.key#" title="Public Link">
-				<img src="includes/images/file.png" alt="file" border="0" /> #object.Key#
+				<img src="#rc.root#/includes/images/file.png" alt="file" border="0" /> #object.Key#
 			</a>
 		</cfif>
 	</td>
@@ -169,26 +169,26 @@
 	<td class="center"> 
 		<cfif findNoCase("_$folder$",object.key) eq 0>
 			<a href="javascript:secureLink('#urlEncodedFormat(object.key)#')" title="Time Expired Link">
-				<img src="includes/images/link.png" border="0" alt="secure link" />
+				<img src="#rc.root#/includes/images/link.png" border="0" alt="secure link" />
 			</a> 
 		</cfif>
 		&nbsp;
 		<a href="javascript:showACL('#urlEncodedFormat(rc.bucketname)#/#urlEncodedFormat(object.key)#')"
 		   title="Show bucket ACL">
-			<img src="includes/images/security.png" border="0" alt="security" />
+			<img src="#rc.root#/includes/images/security.png" border="0" alt="security" />
 		</a>
 		&nbsp;
 		<a href="javascript:getObjectInfo('#URLEncodedFormat(object.Key)#')" title="Get Object Metadata">
-			<img src="includes/images/info.png" border="0" alt="" /> 
+			<img src="#rc.root#/includes/images/info.png" border="0" alt="" /> 
 		</a>
 		&nbsp;
 		<cfif findNoCase("_$folder$",object.key) eq 0>
 			<a href="javascript:copyObject('#URLEncodedFormat(object.Key)#')" title="Copy Object">
-				<img src="includes/images/copy.png" border="0" alt="" /> 
+				<img src="#rc.root#/includes/images/copy.png" border="0" alt="" /> 
 			</a>
 			&nbsp;
 			<a href="javascript:void(0);" rel="#urlEncodedFormat(object.key)#" class="removeObject" title="Remove Object">
-				<img src="includes/images/delete.png" border="0" alt="" />   
+				<img src="#rc.root#/includes/images/delete.png" border="0" alt="" />   
 			</a>
 		</cfif>
 </tr>
@@ -223,7 +223,7 @@ function uploadFolder(){
 function getObjectInfo(obj){
 	var data = {bucketName:"#rc.bucketName#",
 				objectKey:obj};
-	$("##dialog").load('#event.buildLink("explorer.getObjectInfo")#',
+	$("##dialog").load('#event.buildLink("s3explorer.explorer.getObjectInfo")#',
 						data,
 						function(){
 							$(this).append(closeHTML);
@@ -232,7 +232,7 @@ function getObjectInfo(obj){
 function secureLink(obj){
 	var data = {bucketName:"#rc.bucketName#",
 				key:encodeURI(obj)};
-	$("##dialog").load('#event.buildLink("explorer.genAuthenticatedURL")#',
+	$("##dialog").load('#event.buildLink("s3explorer.explorer.genAuthenticatedURL")#',
 						data,
 						function(){
 							$(this).append(closeHTML);
@@ -241,7 +241,7 @@ function secureLink(obj){
 function copyObject(obj){
 	var data = {fromBucket:"#rc.bucketName#",
 				fromURI:obj};
-	$("##dialog").load('#event.buildLink("explorer.copyDialog")#',
+	$("##dialog").load('#event.buildLink("s3explorer.explorer.copyDialog")#',
 						data,
 						function(){
 							$(this).append(closeHTML);
@@ -249,7 +249,7 @@ function copyObject(obj){
 }
 function showACL(bucket){
 	var data = {objectName:bucket};
-	$("##dialog").load('#event.buildLink("explorer.objectACL")#',
+	$("##dialog").load('#event.buildLink("s3explorer.explorer.objectACL")#',
 						data,
 						function(){
 							$(this).append(closeHTML);

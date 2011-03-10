@@ -26,7 +26,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="Amazon S3 REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="true">
+<cfcomponent hint="Amazon S3 REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
@@ -576,11 +576,11 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		<cfscript>
 			var results = "";
 
-			arguments.uri = urlEncodedFormat(arguments.uri);
+			arguments.uri = urlEncodedFormat( urlDecode(arguments.uri) );
 			arguments.uri = replacenocase(arguments.uri,"%2E",".","all");
 			arguments.uri = replacenocase(arguments.uri,"%2D","-","all");
 			arguments.uri = replacenocase(arguments.uri,"%5F","_","all");
-
+			
 			// Invoke call
 			results = S3Request(method="DELETE",resource=arguments.bucketName & "/" & arguments.uri);
 

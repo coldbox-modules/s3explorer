@@ -1,11 +1,11 @@
 <cfscript>
-	// General Properties
-	setUniqueURLS(false);	
-	setExtensionDetection(False);
-	
-	if( getSetting("environment") eq "development"){
-		setAutoReload(true);
-	}
+	// Allow unique URL or combination (false)
+	setUniqueURLS(false);
+	// Auto reload configuration, true in dev makes sense
+	//setAutoReload(false);
+	// Sets automatic route extension detection and places the extension in the rc.format
+	// setExtensionDetection(true)
+	// setValidExtensions('xml,json,jsont,rss,html,htm');
 	
 	// Base URL
 	if( len(getSetting('AppMapping') ) lte 1){
@@ -16,6 +16,5 @@
 	}
 	
 	// Your Application Routes
-	addRoute(pattern="/bucket/:bucketname/:foldername?",handler="explorer",action="viewBucket");
 	addRoute(pattern=":handler/:action?");
 </cfscript>
