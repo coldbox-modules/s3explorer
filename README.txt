@@ -27,6 +27,9 @@ Thanks to Jerad Sloan for the Cache Control headers.
 Thanks to Curt Gratz for collaboration and fixes
 Thanks to Alagukannap "Al" for his constributions
 
+Version 2.0
+* ColdFusion 10 bug fixes with XMLSearch and XPath 2.0
+
 Version 1.5
 * Fixes by Curt Gratz and CKH on filename characters
 

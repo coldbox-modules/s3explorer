@@ -15,7 +15,7 @@ Description :
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.ortussolutions.com";
 	this.description 		= "A Cool Amazon S3 Explorer Module For ColdBox";
-	this.version			= "1.5";
+	this.version			= "2.0";
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "s3explorer";

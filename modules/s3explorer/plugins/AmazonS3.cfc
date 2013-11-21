@@ -44,7 +44,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			// Setup Plugin
 			super.init(arguments.controller);
 			setPluginName("Amazon S3 REST Wrapper");
-			setPluginVersion("1.5");
+			setPluginVersion("2.0");
 			setPluginDescription("A REST wrapper to the Amazon S3 service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");
@@ -121,9 +121,8 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
-
 		// Parse out buckets
-		bucketsXML = xmlSearch(results.response, "//:Bucket");
+		bucketsXML = xmlSearch(results.response, "//*[local-name()='Bucket']");
 		for(x=1; x lte arrayLen(bucketsXML); x++){
 			thisBucket = {name=trim(bucketsXML[x].name.xmlText),
 						  creationDate=trim(bucketsXML[x].creationDate.xmlText)};
@@ -162,7 +161,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		<cfargument name="bucketName" type="string" required="true" hint="The bucket name to get info on">
 		<cfscript>
 		var results = "";
-		var Status = [];
+		var status = [];
 
 		// Invoke call
 		results = S3Request(resource=arguments.bucketname & "?versioning");
@@ -171,11 +170,11 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 		if( results.error ){
 			$throw("Error making Amazon REST Call",results.message);
 		}
-		Status = xmlSearch(results.response,"//:VersioningConfiguration//:Status[1]");
+		status = xmlSearch( results.response, "//*[local-name()='VersioningConfiguration']//*[local-name()='Status']/*[1]" );
 
 		// Parse out Version Configuration
-		if( arrayLen(Status) gt 0 ){
-			return Status[1].xmlText;
+		if( arrayLen( status ) gt 0 ){
+			return status[ 1 ].xmlText;
 		}
 
 		return "";
@@ -243,7 +242,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			}
 
 			// Parse Grants
-			grantsXML = xmlSearch(results.response,"//:Grant");
+			grantsXML = xmlSearch(results.response,"//*[local-name()='Grant']");
 
 			for(x=1; x lte arrayLen(grantsXML); x++){
 				thisGrant = {
@@ -304,7 +303,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			}
 
 			// Parse results
-			contentsXML = xmlSearch(results.response, "//:Contents");
+			contentsXML = xmlSearch(results.response, "//*[local-name()='Bucket']");
 
 			for(x=1; x lte arrayLen(contentsXML); x++){
 				thisContent = {key=trim(contentsXML[x].key.xmlText),
