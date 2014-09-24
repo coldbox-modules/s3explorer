@@ -122,7 +122,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			$throw("Error making Amazon REST Call",results.message);
 		}
 		// Parse out buckets
-		bucketsXML = xmlSearch(results.response, "//*[local-name()='Bucket']");
+		bucketsXML = xmlSearch(results.response, "//*[local-name()='Contents']");
 		for(x=1; x lte arrayLen(bucketsXML); x++){
 			thisBucket = {name=trim(bucketsXML[x].name.xmlText),
 						  creationDate=trim(bucketsXML[x].creationDate.xmlText)};
@@ -303,7 +303,7 @@ s3_ssl : Whether to use ssl on all cals or not (Optional, defaults to false)
 			}
 
 			// Parse results
-			contentsXML = xmlSearch(results.response, "//*[local-name()='Bucket']");
+			contentsXML = xmlSearch(results.response, "//*[local-name()='Contents']");
 
 			for(x=1; x lte arrayLen(contentsXML); x++){
 				thisContent = {key=trim(contentsXML[x].key.xmlText),
