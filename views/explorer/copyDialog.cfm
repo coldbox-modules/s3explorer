@@ -1,5 +1,5 @@
 <cfoutput>
-<h1><img src="#rc.root#/includes/images/copy.png" alt="0" /> Copy Object > /#rc.fromBucket#/#rc.fromURI#</h1>
+<h1><img src="#prc.root#/includes/images/copy.png" alt="0" /> Copy Object > /#rc.fromBucket#/#rc.fromURI#</h1>
 
 <form action="#event.buildLink('s3explorer.explorer.copyObject')#" method="post" name="copyForm" id="copyForm">
 	

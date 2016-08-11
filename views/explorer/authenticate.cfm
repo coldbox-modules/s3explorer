@@ -1,5 +1,5 @@
 <cfoutput>
-<h1><img src="#rc.root#/includes/images/security.png" alt="security" /> Amazon Credentials</h1>
+<h1><img src="#prc.root#/includes/images/security.png" alt="security" /> Amazon Credentials</h1>
 <p>You can either put your Amazon credentials below or you can add them
 to your ColdBox configuration file as <i>s3_accessKey, s3_secretKey, s3_ssl</i>.
 

@@ -1,0 +1,37 @@
+{
+    "name":"Amazon S3 Explorer",
+    "author":"Ortus Solutions <info@ortussolutions.com>",
+    "version":"3.0.0",
+    "location":"coldbox-modules/s3explorer#v3.0.0",
+    "slug":"s3explorer",
+    "type":"modules",
+    "documentation":"https://github.com/coldbox-modules/s3explorer",
+    "bugs":"https://github.com/coldbox-modules/s3explorer/issues",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/coldbox-modules/s3explorer"
+    },
+    "description":"A nice explorer like module for S3 Buckets",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "ignore":[
+        "tests/*",
+        ".git*"
+    ],
+    "dependencies":{
+        "cbmessagebox":"^2.1.0+00027",
+        "s3sdk":"github:coldbox-modules/s3sdk"
+    },
+    "installPaths":{
+        "cbmessagebox":"modules/cbmessagebox",
+        "s3sdk":"modules/s3sdk"
+    },
+    "scripts" : {
+        "postVersion" : "package set location='coldbox-modules/s3explorer/v#https://github.com/coldbox-modules/s3sdk/blob/master/.travis.yml`package version`.zip'",
+        "postPublish" : "!git push --follow-tags"
+    }
+}

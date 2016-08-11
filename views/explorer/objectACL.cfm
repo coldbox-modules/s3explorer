@@ -1,5 +1,5 @@
 <cfoutput>
-<h1><img src="#rc.root#/includes/images/security.png" alt="disks" /> ACL > #rc.objectName#</h1>
+<h1><img src="#prc.root#/includes/images/security.png" alt="disks" /> ACL > #rc.objectName#</h1>
 
 <table width="98%">
 <thead>

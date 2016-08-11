@@ -1,4 +1,12 @@
-.DS_Store
-
-/settings.xml
-/.project
+.settings
+logs/*.log
+settings.xml
+.netbeans
+# testing
+tests/results/*
+tests/coldbox/*
+tests/testbox/*
+tests/logs/*
+tests/config/s3.json
+# Modules
+modules/*
