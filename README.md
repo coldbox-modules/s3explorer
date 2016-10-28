@@ -37,7 +37,9 @@ s3sdk = {
     // The default encryption character set
     encryption_charset = "utf-8",
     // SSL mode or not on cfhttp calls.
-    ssl = false
+    ssl = false,
+    // Temp directory before uploading to s3
+    tempuploaddirectory = "/tmp"
 };
 ```
 
