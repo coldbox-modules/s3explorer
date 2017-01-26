@@ -23,15 +23,15 @@
         ".git*"
     ],
     "dependencies":{
-        "cbmessagebox":"^2.1.0+00027",
-        "s3sdk":"github:coldbox-modules/s3sdk"
+        "cbmessagebox":"^2.2.0",
+        "s3sdk":"^3.0.1"
     },
     "installPaths":{
         "cbmessagebox":"modules/cbmessagebox",
         "s3sdk":"modules/s3sdk"
     },
-    "scripts" : {
-        "postVersion" : "package set location='coldbox-modules/s3explorer/v#https://github.com/coldbox-modules/s3sdk/blob/master/.travis.yml`package version`.zip'",
-        "postPublish" : "!git push --follow-tags"
+    "scripts":{
+        "postVersion":"package set location='coldbox-modules/s3explorer/v#`package version`'",
+        "postPublish":"!git push --follow-tags"
     }
 }

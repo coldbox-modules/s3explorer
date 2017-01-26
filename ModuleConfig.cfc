@@ -5,7 +5,7 @@ component{
 	this.author 			= "Ortus Solutions";
 	this.webURL 			= "https://www.ortussolutions.com";
 	this.description 		= "A Cool Amazon S3 Explorer Module For ColdBox";
-	this.version			= "3.0.0";
+	this.version			= "3.0.1";
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "s3explorer";
@@ -38,13 +38,6 @@ component{
 	function onLoad(){
 		// parse parent settings
 		parseParentSettings();
-
-		binder.map( "AmazonS3@s3Explorer" )
-			.to( "#moduleMapping#.models.AmazonS3" )
-			.initArg( name="accessKey", value=settings.accessKey )
-			.initArg( name="secretKey", value=settings.secretKey )
-			.initArg( name="encryption_charset", value=settings.encryption_charset )
-			.initArg( name="ssl", value=settings.ssl );
 	}
 	
 	/**

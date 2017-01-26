@@ -1,3 +1,6 @@
+# Version 3.0.1
+* Fixes on missing mapping due to ColdBox 4.3 eager mappings
+
 # Version 3.0.0
 * Upgraded for ColdBox 4
 * Upgraded for latest Amazon styles
